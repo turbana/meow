@@ -246,6 +246,11 @@ For examples:
   :group 'meow
   :type 'string)
 
+(defcustom meow-local-leader-prefix nil
+  "The prefix key used when creating local leader keymaps."
+  :group 'meow
+  :type 'string)
+
 (defvar meow-keypad-describe-keymap-function 'meow-describe-keymap
   "The function used to describe (KEYMAP) during keypad execution.
 
@@ -559,6 +564,13 @@ Has a structure of (sel-type point mark).")
     (meow-keypad-describe-key . "desc-key")
     (meow-backspace . "backspace"))
   "A list of (command . short-name)")
+
+(defvar meow--local-leader-maps nil
+  "An alist mapping mode specific keymaps to local leader keymaps.
+
+Elements are of the form: (MODE-KEYMAP . LOCAL-LEADER-KEYMAP).
+
+Used in `meow-local-leader-define-key' to keep track of a mode's local leader definitions.")
 
 ;;; Backup variables
 

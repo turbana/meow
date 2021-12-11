@@ -25,6 +25,22 @@ The default keybindings in leader keymap:
 - ~x~, ~c~, ~h~, ~m~ and ~g~ is bound to ~meow-keypad-start~, which can start KEYPAD state.
 - ~SPC~ will execute the original command which bound to ~SPC~.
 
+** meow-local-leader-define-key
+
+Like =meow-leader-define-key=, but for the local leader keymap. The local leader keymap is only active under the specified =mode= and is empty by default. =meow-local-leader-prefix= must be set prior to calling.
+
+Example:
+#+begin_src emacs-lisp
+  (meow-local-leader-define-key 'org-mode
+    '("t" . org-todo))
+#+end_src
+
+** meow-local-leader-prefix
+
+Default: =nil=
+
+The key prefix to use for entering the local leader keymap.
+
 ** meow-motion-overwrite-define-key
 
 Use like ~meow-motion-overwrite-define-key~.

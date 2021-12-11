@@ -44,6 +44,42 @@ Optional argument ARGS key definitions."
               (meow--parse-def (cdr key-def))))
           args))
 
+(defun meow-local-leader-define-key (mode &rest args)
+  "Define key for Local Leader under MODE.
+
+MODE-MAP should be a quoted keymap where the local leader keymap will be
+defined. `meow-local-leader-prefix' must be set prior to calling.
+
+Usage:
+  (meow-local-leader-define-key 'emacs-lisp-mode
+   '(\"h\" . hs-toggle-hiding))
+Optional argument ARGS key definitions."
+  (declare (indent 1))
+  (let ((keymap-sym (intern (format "%s-map" mode))))
+    (if (and (boundp keymap-sym) keymap-sym)
+        (meow--local-leader-define-key-impl keymap-sym args)
+      (let ((mode-sans-mode (intern (replace-regexp-in-string
+                                     "-mode$" "" (symbol-name mode)))))
+        (dolist (feature-guess (list mode mode-sans-mode))
+          (with-eval-after-load feature-guess
+            (meow--local-leader-define-key-impl keymap-sym args)))))))
+
+(defun meow--local-leader-define-key-impl (mode-map keys)
+  "Implementation function for `meow-local-leader-define-key'."
+  (declare (indent 1))
+  (unless meow-local-leader-prefix
+    (user-error "`meow-local-leader-prefix' must be set to a prefix key."))
+  (let ((keymap (assoc-default mode-map meow--local-leader-maps)))
+    (unless keymap
+      (setq keymap (make-sparse-keymap))
+      (define-key (symbol-value mode-map) (kbd meow-local-leader-prefix) keymap)
+      (push (cons mode-map keymap) meow--local-leader-maps))
+    (mapcar (lambda (key-def)
+              (define-key keymap
+                (kbd (car key-def))
+                (meow--parse-def (cdr key-def))))
+            keys)))
+
 (defun meow-normal-define-key (&rest args)
   "Define key for normal state.
 
